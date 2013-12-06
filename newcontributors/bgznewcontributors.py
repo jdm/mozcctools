@@ -80,6 +80,7 @@ if __name__ == "__main__":
     newb = []
     for p in new[release_nr]:
         newb.append(p.encode('utf-8','ignore') + ": " + ", ".join([str(bug) for bug in new[release_nr][p]]))
+    newb.sort()
     f.write("\n".join(newb))
     f.close()
 
