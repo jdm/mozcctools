@@ -6,7 +6,7 @@
 
 import urllib
 import urllib2
-import simplejson as json
+import json
 import sys
 
 
