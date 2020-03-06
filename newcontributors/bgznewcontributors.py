@@ -7,6 +7,7 @@
 import urllib
 import urllib2
 import json
+import pickle
 import sys
 
 
@@ -18,23 +19,26 @@ def get_new_assignees(milestone):
     assignee as a key and the list of bugs reported/assigned as a value
     """
     query_args = {
-        'username': '',  # insert username
-        'password': '',  # insert password
         'target_milestone': milestone,
-        'resolution': 'FIXED'
+        'status': 'RESOLVED',
+        'include_fields': 'id,assigned_to',
         }
     encoded_args = urllib.urlencode(query_args, True)
 
-    url = 'https://api-dev.bugzilla.mozilla.org/latest/bug/?' + encoded_args
+    url = 'https://bugzilla.mozilla.org/rest/bug?' + encoded_args
     print url
-    result_json = urllib2.urlopen(url).read()
+    req = urllib2.Request(url, headers={
+        "X-BUGZILLA-LOGIN": "josh@joshmatthews.net",
+        "X-BUGZILLA-API-KEY": "KeQysKexdYHcCcN6KgcHcGPIRhCIpmmGyjSwkWfU",
+    })
+    result_json = urllib2.urlopen(req).read()
     result = json.loads(result_json)
     bugs = result['bugs']
 
     assignees = {}
 
     for bug in bugs:
-        assignee = bug['assigned_to']
+        assignee = bug['assigned_to_detail']
         if 'real_name' in assignee:
             assignee = assignee['real_name'] + "   <" + assignee['name'] + ">"
         else:
@@ -44,6 +48,16 @@ def get_new_assignees(milestone):
                 assignees[assignee] = []
             assignees[assignee].append(bug)
     return assignees, bugs
+
+
+def load_assignees(release):
+    try:
+        f = open(sys.argv[3] + '/' + str(release))
+        assignees, bugs = pickle.load(f)
+        f.close()
+        return assignees, bugs
+    except:
+        return get_new_assignees(["Firefox %i" % (release), "mozilla%i" % (release)])
 
 
 if __name__ == "__main__":
@@ -57,10 +71,11 @@ if __name__ == "__main__":
     num_bugs = {}
     comebacks = {}
     bugs = {}
-    release[start], bugs[start] = get_new_assignees(["Firefox %i" % (start), "mozilla%i" % (start)])
+    release[start], bugs[start] = load_assignees(start)
     all_hackers = set(release[start].keys())
     for i in xrange(start+1, release_nr + 1):
-        release[i], bugs[i] = get_new_assignees(["Firefox %i" % (i), "mozilla%i" % (i)])
+        print i
+        release[i], bugs[i] = load_assignees(i)
         missing[i] = set()
         new[i] = {}
         comebacks[i] = set()
