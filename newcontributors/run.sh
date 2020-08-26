@@ -1,25 +1,12 @@
-#set -x
-basepath=~/Documents/releasecontributors
-if [ "$1" == "--clean" ]
-then
-  shift
-  rm $basepath/*
-fi
+basepath=/tmp
 for (( i=10; i<=$1; i++ ))
 do
   file="$basepath/$i"
-  if [ ! -f $file ]
+  echo Getting info for $i
+  python releasecontributors.py $i $file
+  if [[ "$?" != "0" ]]
   then
-    echo Getting info for $i
-    python releasecontributors.py $i $file
-    if [[ "$?" != "0" ]]
-    then
-      exit 1
-    fi
-    #until python releasecontributors.py $i $file;
-    #do
-    #  echo Retrying...
-    #done
+    exit 1
   fi
 done
 python bgznewcontributors.py 10 $1 $basepath
