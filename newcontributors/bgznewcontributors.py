@@ -28,8 +28,8 @@ def get_new_assignees(milestone):
     url = 'https://bugzilla.mozilla.org/rest/bug?' + encoded_args
     print url
     req = urllib2.Request(url, headers={
-        "X-BUGZILLA-LOGIN": "josh@joshmatthews.net",
-        "X-BUGZILLA-API-KEY": "KeQysKexdYHcCcN6KgcHcGPIRhCIpmmGyjSwkWfU",
+        "X-BUGZILLA-LOGIN": "user@email.tld",
+        "X-BUGZILLA-API-KEY": "<api key goes here>",
     })
     result_json = urllib2.urlopen(req).read()
     result = json.loads(result_json)
