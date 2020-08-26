@@ -74,7 +74,7 @@ if __name__ == "__main__":
     release[start], bugs[start] = load_assignees(start)
     all_hackers = set(release[start].keys())
     for i in xrange(start+1, release_nr + 1):
-        print i
+        #print i
         release[i], bugs[i] = load_assignees(i)
         missing[i] = set()
         new[i] = {}
@@ -121,5 +121,6 @@ if __name__ == "__main__":
             try:
                 f.write(line)
             except:
-                print line
+                #print line
+		pass
     f.close()
